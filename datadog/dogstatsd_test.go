@@ -7,8 +7,6 @@ import (
 	"net"
 	"reflect"
 	"testing"
-
-	"github.com/hashicorp/go-metrics"
 )
 
 var EmptyTags []metrics.Label
