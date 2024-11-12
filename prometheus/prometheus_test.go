@@ -20,6 +20,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/expfmt"
+
+	"github.com/armon/go-metrics"
 )
 
 const (

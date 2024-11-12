@@ -15,6 +15,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
+
+	"github.com/armon/go-metrics"
 )
 
 var (

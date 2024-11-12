@@ -11,6 +11,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/armon/go-metrics"
 )
 
 func TestNewCirconusSink(t *testing.T) {

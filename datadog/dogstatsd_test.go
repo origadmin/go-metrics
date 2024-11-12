@@ -7,6 +7,8 @@ import (
 	"net"
 	"reflect"
 	"testing"
+
+	"github.com/armon/go-metrics"
 )
 
 var EmptyTags []metrics.Label
