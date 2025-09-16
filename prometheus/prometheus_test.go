@@ -15,8 +15,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	dto "github.com/prometheus/client_model/go"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/expfmt"
@@ -69,8 +69,8 @@ func TestMultiplePrometheusSink(t *testing.T) {
 	cfg := PrometheusOpts{
 		Expiration:         5 * time.Second,
 		GaugeDefinitions:   append([]GaugeDefinition{}, gaugeDef),
-		SummaryDefinitions: append([]SummaryDefinition{}),
-		CounterDefinitions: append([]CounterDefinition{}),
+		SummaryDefinitions: []SummaryDefinition{},
+		CounterDefinitions: []CounterDefinition{},
 		Name:               "sink1",
 	}
 
@@ -92,8 +92,8 @@ func TestMultiplePrometheusSink(t *testing.T) {
 	cfg2 := PrometheusOpts{
 		Expiration:         15 * time.Second,
 		GaugeDefinitions:   append([]GaugeDefinition{}, gaugeDef2),
-		SummaryDefinitions: append([]SummaryDefinition{}),
-		CounterDefinitions: append([]CounterDefinition{}),
+		SummaryDefinitions: []SummaryDefinition{},
+		CounterDefinitions: []CounterDefinition{},
 		// commenting out the name to point out that the default name will be used here instead
 		// Name:               "sink2",
 	}
@@ -250,10 +250,10 @@ func fakeServer(q chan string) *httptest.Server {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(202)
 		w.Header().Set("Content-Type", "application/json")
-		defer r.Body.Close()
+		defer func() { _ = r.Body.Close() }()
 		dec := expfmt.NewDecoder(r.Body, expfmt.FmtProtoDelim)
 		m := &dto.MetricFamily{}
-		dec.Decode(m)
+		_ = dec.Decode(m)
 		expectedm := &dto.MetricFamily{
 			Name: proto.String("default_one_two"),
 			Help: proto.String("default_one_two"),
@@ -292,11 +292,11 @@ func TestSetGauge(t *testing.T) {
 		log.Fatal(err)
 	}
 	host := u.Hostname() + ":" + u.Port()
-	sink, err := NewPrometheusPushSink(host, time.Second, "pushtest")
+	sink, _ := NewPrometheusPushSink(host, time.Second, "pushtest")
 	metricsConf := metrics.DefaultConfig("default")
 	metricsConf.HostName = MockGetHostname()
 	metricsConf.EnableHostnameLabel = true
-	metrics.NewGlobal(metricsConf, sink)
+	_, _ = metrics.NewGlobal(metricsConf, sink)
 	metrics.SetGauge([]string{"one", "two"}, 42)
 	response := <-q
 	if response != "ok" {
@@ -313,11 +313,11 @@ func TestSetPrecisionGauge(t *testing.T) {
 		log.Fatal(err)
 	}
 	host := u.Hostname() + ":" + u.Port()
-	sink, err := NewPrometheusPushSink(host, time.Second, "pushtest")
+	sink, _ := NewPrometheusPushSink(host, time.Second, "pushtest")
 	metricsConf := metrics.DefaultConfig("default")
 	metricsConf.HostName = MockGetHostname()
 	metricsConf.EnableHostnameLabel = true
-	metrics.NewGlobal(metricsConf, sink)
+	_, _ = metrics.NewGlobal(metricsConf, sink)
 	metrics.SetPrecisionGauge([]string{"one", "two"}, 42)
 	response := <-q
 	if response != "ok" {
